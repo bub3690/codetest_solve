@@ -6,7 +6,7 @@ R,C = tuple(map(int,input().split()))
 
 grid = [ list(input().strip()) for _ in range(R)]
 
-visit = [[-1]*C for _ in range(R) ]
+visit = [0] *26
 
 # print( ord('Z')- ord('A') )
 dxs= [0,1,0,-1]
@@ -34,19 +34,17 @@ def go(here,count):
         next_y = now_y+dys[i]
 
         if range_check(next_x,next_y):
-            if grid[next_x][next_y] not in check_set:
-                check_set.add(grid[next_x][next_y])
+            if visit[ ord(grid[next_x][next_y])-ord('A') ] ==0 :
+                visit[ ord(grid[next_x][next_y])-ord('A') ] = 1
                 go( (next_x,next_y), count+1)
-                
                 if find_answer:
                     break
 
-                check_set.remove(grid[next_x][next_y])
+                visit[ ord(grid[next_x][next_y])-ord('A') ] = 0
 
 
 
-check_set = set()
-check_set.add(grid[0][0])
+visit[ord(grid[0][0])-ord('A') ] = 1
 go((0,0),1)
 
 print(answer)
