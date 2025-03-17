@@ -1,26 +1,42 @@
 import sys
 
-#sys.setrecursionlimit(2000000)
-
-
+sys.setrecursionlimit(1000000)
 
 N= int(input())
 
 
-dp = [sys.maxsize]*(10**6+2) # 128mb보다 큰가?
+dp = [sys.maxsize]*(10**6+2) # 128mb보다 큰가? # 128mb보다 큰가?
 #dp = {}
 
 
-dp[0] =0
-dp[1] = 0
 
-#초기화.
+# 백만 하면 리컬전이 너무 크다.
+def go(here):
+    #print(here)
 
-for i in range(2,N+1):
+    if here == 1:
+        dp[here] = 0
+        return 0
+    
+    if dp[here] != sys.maxsize:
+        return dp[here]
+    
+    
+    answer = sys.maxsize
+    if (here%3==0) and (here%2==0):
+        answer = min( go(here//3)+1, go(here//2)+1) 
+    elif here%3 == 0:
+        answer = min( go(here//3)+1, go(here-1)+1) 
+    elif here%2 == 0:
+        answer = min( go(here//2)+1, go(here-1)+1)
+    else:
+        answer = go(here-1)+1 # 여기가 문젠가?
 
-        if(i%3==0):dp[i] = min(dp[i//3] +1, dp[i])
-        if(i%2==0):dp[i] = min(dp[i//2] +1, dp[i])
-        dp[i] = min(dp[i-1] + 1, dp[i])
+    dp[here] = answer
+    return answer
+
+
+go(N)
 
 print(dp[N])
 
