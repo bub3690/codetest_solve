@@ -41,6 +41,7 @@
 
 
 from collections import deque
+import copy
 
 n,m,h,K = tuple(map(int,input().split()))
 runner_list = [ list(map(int,input().split())) for _ in range(m)]
@@ -105,7 +106,11 @@ def move_forward(start_position,end_position):
 
         for i in range(move_much):
             now_path = move_player(direct,now_path)
-            next_direction = (direct+1)%4 # 바로 고개틀기.
+            #현재상태에서 고개방향. 마지막에만 바로 고개를 틀어야함.
+            if i== move_much-1:
+                next_direction = (direct+1)%4 # 바로 고개틀기.
+            else:
+                next_direction=direct
             path_list.append([now_path[0],now_path[1],next_direction])
             if now_path == end_position:
                 break
@@ -119,8 +124,22 @@ def move_forward(start_position,end_position):
 
 #path_forward = [start_position,]
 path_forward = move_forward(start_position,end_position)
+path_backward = copy.deepcopy(path_forward)
+path_backward = path_backward[::-1] # 뒤집기뿐 아니라 방향도 뒤집어야함\
 
-path_backward = path_forward[::-1]
+
+for i in range(len(path_backward)):
+    path_lst = path_backward[i]
+    d = path_lst[2]
+    if d ==0:
+        d =2
+    elif d ==1:
+        d =3
+    elif d ==2:
+        d=0
+    else:
+        d =1
+    path_backward[i][2]=d
 
 
 def get_dist(pos1,pos2):
@@ -192,6 +211,7 @@ for k in range(K):
     #플레이어 현재 위치.
     now_k = k%(n**2-1) # 23 % 25
     turn = k//(n**2-1)
+    #print(turn)
     if turn%2==0:
         # foward
         now_state_player = path_forward[now_k]
