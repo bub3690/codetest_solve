@@ -101,47 +101,69 @@ def move_forward(start_position,end_position):
     now_path = start_position
     count = 0
     direct = 0 # 0: 상, 1: 우, 2:하, 3:좌
-    while now_path != end_position:
+
+    while len(path_list) < (n*n-1):
         move_much = count//2 +1
 
         for i in range(move_much):
+            if len(path_list)>=n*n-1:
+                break
             now_path = move_player(direct,now_path)
             #현재상태에서 고개방향. 마지막에만 바로 고개를 틀어야함.
-            if i== move_much-1:
-                next_direction = (direct+1)%4 # 바로 고개틀기.
-            else:
-                next_direction=direct
+            next_direction=direct
             path_list.append([now_path[0],now_path[1],next_direction])
-            if now_path == end_position:
-                break
         
+        path_list[-1][2] = (direct+1)%4 # 바로 고개틀기.
         count +=1
         direct = (direct+1)%4
         
 
-    return path_list
+    return path_list, count
+
+#상우하좌
+dx=[-1,0,1,0]
+dy=[0,1,0,-1]
+
+def get_dir(path1,path2):
+    
+    x1,x2= path1[0],path2[0]
+    y1,y2 = path1[1],path2[1]
+
+    dist_x = x1-x2
+    dist_y = y1-y2
+
+    if dist_x==dx[0] and dist_y==dy[0]:
+        dir=2 #아래방향으로
+    elif dist_x==dx[1] and dist_y==dy[1]:
+        dir=3
+    elif dist_x==dx[2] and dist_y==dy[2]:
+        dir=0
+    else:
+        dir=1
+    return dir
+            
+
+
 
 
 #path_forward = [start_position,]
-path_forward = move_forward(start_position,end_position)
+path_forward,count = move_forward(start_position,end_position)
+#print(path_forward)
+#path_backward = move_backward(end_position,start_position,count)
 path_backward = copy.deepcopy(path_forward)
 path_backward = path_backward[::-1] # 뒤집기뿐 아니라 방향도 뒤집어야함\
+path_backward.pop(0)
+path_backward.append([n//2+1, n//2+1,2])
 
 
-for i in range(len(path_backward)):
+for i in range(len(path_backward)-1 ):
     path_lst = path_backward[i]
-    d = path_lst[2]
-    if d ==0:
-        d =2
-    elif d ==1:
-        d =3
-    elif d ==2:
-        d=0
-    else:
-        d =1
-    path_backward[i][2]=d
+    path1=path_backward[i]
+    path2=path_backward[i+1]
+    dir = get_dir(path1,path2)
+    path_backward[i][2]=dir
 
-
+#print(path_backward)
 def get_dist(pos1,pos2):
     return abs(pos1[0]-pos2[0])+abs(pos1[1]-pos2[1])
 
