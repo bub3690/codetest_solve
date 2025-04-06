@@ -176,7 +176,7 @@ def move_runner(pos,direction,player_pos):
         if next_x==player_x and next_y==player_y:
             next_x = x
             next_y = y
-
+        #print('next ',next_x,next_y)
 
     next_direction = direction
     return next_x,next_y,next_direction
@@ -208,14 +208,14 @@ for k in range(K):
     for i in range(now_m):
         #deque에서 하나씩 뽑고 다시 푸시.
         runner_now_lst=runner_que.popleft()
-        #print(runner_now_lst)
+        
         runner_x, runner_y, dir_runner = runner_now_lst[0], runner_now_lst[1], runner_now_lst[2]
         
         runner_dist = get_dist((before_x,before_y),(runner_x,runner_y))
         if runner_dist>3:
             runner_que.append([runner_x, runner_y, dir_runner])
             continue
-        runner_x,runner_y,dir_runner=move_runner( (runner_x,runner_y),dir_runner,now_state_player)# 바뀐 방향과 x,y
+        runner_x,runner_y,dir_runner=move_runner( (runner_x,runner_y),dir_runner,[before_x,before_y])# 바뀐 방향과 x,y
         runner_que.append([runner_x, runner_y, dir_runner])
 
     #player move
@@ -229,6 +229,7 @@ for k in range(K):
     for i in range(now_m):
         #deque에서 하나씩 뽑고 다시 푸시.
         runner_now_lst=runner_que.popleft()
+        #print(runner_now_lst)        
         runner_x, runner_y, dir_runner = runner_now_lst[0], runner_now_lst[1], runner_now_lst[2]
         xy= str(runner_x*100)+str(runner_y)
         kill_runner = False
