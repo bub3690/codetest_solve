@@ -163,8 +163,8 @@ def ballshot(round):
     # 모든 팀 대상으로 공은 공유되니까. 맞은 위치 하나 리턴.
     # turn 별로.
     
-    turn = round//n
-
+    turn = (round//n)%4
+    # print("turn ", turn, round, round%n)
     find_x = None
     find_y = None
     find_first = True
@@ -212,14 +212,14 @@ search_team()
 
 for round in range(k):
     rotate()
-    #print("----")
+    # print("----")
     # for i in range(n):
     #     for j in range(n):
     #         print(grid[i][j],end=' ')
     #     print()    
-    #print(team_list)
+    # print(team_list)
     find_x,find_y=ballshot(round)
-    #print('ballshot ',find_x,find_y)
+    # print('ballshot ',find_x,find_y)
     #어느 팀인지 찾고. 점수 내기.
     for team_idx,team in enumerate(team_list):
         if [find_x,find_y] in team:
@@ -230,13 +230,13 @@ for round in range(k):
             grid[tail_x][tail_y] = 1
             grid[head_x][head_y] = 3
             team_list[team_idx] = team_list[team_idx][::-1]
+            # print("rotate",tail_x,tail_y,head_x,head_y)
+            # print("rotated: ", team_list[team_idx])
             break
 
 
 
-
-
-    #print(answer)
+    # print(answer)
 
 
 print(answer)
