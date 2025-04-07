@@ -54,6 +54,7 @@ def bfs(x,y):
     path_list.append([x,y])
     while que:
         now_x, now_y = que.popleft()
+        selection_next =[]
         for i in range(4):
             next_x = now_x+dxs[i]
             next_y = now_y+dys[i]
@@ -63,10 +64,27 @@ def bfs(x,y):
                 continue
             if visit[next_x][next_y]==True:
                 continue
-            
-            path_list.append([next_x,next_y])
-            visit[next_x][next_y]= True
-            que.append((next_x,next_y))
+            # 2또는 1을 팀으로 추가시키는 코드가 됨.
+            # 그런데, 찾는순서가 1보다 2을 먼저 추가하게 된다면 문제가 된다. 2먼저 찾도록할 방법이 있을까?
+            # 다 모은다음 그다음 추가하기.
+            selection_next.append((next_x,next_y))
+        
+        if len(selection_next)==1:
+            #그냥 바로 head을 찾은 경우.
+                next_x,next_y = selection_next[0]
+                path_list.append([next_x,next_y])
+                visit[next_x][next_y]= True
+                que.append((next_x,next_y))
+        else:
+            for selection in selection_next:
+                next_x,next_y = selection
+                next_val = grid[next_x][next_y]
+                if next_val ==1:
+                    continue
+                path_list.append([next_x,next_y])
+                visit[next_x][next_y]= True
+                que.append((next_x,next_y))
+                break
 
     return path_list
 
@@ -85,13 +103,23 @@ def search_team():
     return
 
 def search_next(x,y):
+    found = False
     for i in range(4):
         next_x = x+dxs[i]
         next_y = y+dys[i]
-        if check_range(next_x,next_y) and grid[next_x][next_y]==4:
+        if check_range(next_x,next_y) and grid[next_x][next_y]==4 :
+            found= True
             break
-    
-    return next_x,next_y
+
+    if not found:
+        for i in range(4):
+                next_x = x+dxs[i]
+                next_y = y+dys[i]
+                if check_range(next_x,next_y) and grid[next_x][next_y]==3:
+                    found= True
+                    break    
+        
+    return next_x,next_y,found
             
 
 def rotate():
@@ -103,11 +131,16 @@ def rotate():
         next_x=None
         next_y=None
         
-        for member in team[::-1]:
+        for idx,member in enumerate(team[::-1]):
             # 머리부터시작해서 하나씩 밀기.
             now_x,now_y = member[0], member[1]
             if next_x==None or next_y==None:
-                next_x, next_y = search_next(now_x,now_y)
+                next_x, next_y,found = search_next(now_x,now_y)
+            
+            if grid[now_x][now_y]==1 and grid[next_x][next_y]==3 and idx !=0:
+                #돌고돌아 3자리.
+                now_new_team.append([next_x,next_y])
+                break
 
             #4와 자리바꾸기.
             temp = grid[next_x][next_y]
@@ -138,28 +171,28 @@ def ballshot(round):
     if turn==0:
         row = round%n
         for i in range(n):
-            if grid[row][i] == 1 or grid[row][i] == 3:
+            if grid[row][i] == 1 or grid[row][i] == 3 or grid[row][i] == 2 :
                 find_x = row
                 find_y = i
                 break
     elif turn==1:
         col = round%n
         for i in range(n-1,-1,-1):
-            if grid[i][col]==1 or grid[i][col]==3:
+            if grid[i][col]==1 or grid[i][col]==3 or grid[i][col]==2:
                 find_x = i
                 find_y = col
                 break
     elif turn==2:
         row = n-round%n -1
         for i in range(n-1,-1,-1):
-            if grid[row][i] ==1 or grid[row][i] ==3:
+            if grid[row][i] ==1 or grid[row][i] ==3 or grid[row][i] ==2 :
                 find_x = row
                 find_y = i
                 break
     else:
         col = n-round%n -1
         for i in range(n):
-            if grid[i][col]==1 or grid[i][col]==3:
+            if grid[i][col]==1 or grid[i][col]==3 or grid[i][col]==2:
                 find_x = i
                 find_y = col
                 break
@@ -175,13 +208,18 @@ def get_score(member,team):
 
 answer = 0
 
+search_team()
 
 for round in range(k):
-    search_team()
     rotate()
-    # print(team_list)
+    #print("----")
+    # for i in range(n):
+    #     for j in range(n):
+    #         print(grid[i][j],end=' ')
+    #     print()    
+    #print(team_list)
     find_x,find_y=ballshot(round)
-
+    #print('ballshot ',find_x,find_y)
     #어느 팀인지 찾고. 점수 내기.
     for team_idx,team in enumerate(team_list):
         if [find_x,find_y] in team:
@@ -193,7 +231,13 @@ for round in range(k):
             grid[head_x][head_y] = 3
             team_list[team_idx] = team_list[team_idx][::-1]
             break
-    
+
+
+
+
+
+    #print(answer)
+
 
 print(answer)
 
