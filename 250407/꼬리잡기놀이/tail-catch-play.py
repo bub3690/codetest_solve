@@ -143,7 +143,7 @@ def ballshot(round):
                 find_y = i
                 break
     elif turn==1:
-        col = round&n
+        col = round%n
         for i in range(n-1,-1,-1):
             if grid[i][col]==1 or grid[i][col]==3:
                 find_x = i
