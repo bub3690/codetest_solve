@@ -67,7 +67,9 @@ def range_check(x,y):
 
 def move_next_val(x,y,idx):
     # 다음에 갈 방향을 정의
+
     direction = man_data[idx][2]
+    #print('direction',direction)    
     #범위밖이면 반대로 뒤집기. +2 %
     next_x=x+dxs[direction]
     next_y=y+dys[direction]
@@ -86,17 +88,17 @@ def move_next_val_looser(x,y,idx):
     # 범위 밖이거나, 사람이 있을경우 
     direction = man_data[idx][2]
     for i in range(4):
-        direction = (direction+i)%4        
+        new_direction = (direction+i)%4        
         #뒤집어서 다음 칸으로        
-        next_x=x+dxs[direction]
-        next_y=y+dys[direction]
+        next_x=x+dxs[new_direction]
+        next_y=y+dys[new_direction]
         # 자기 원래 자리로 돌아오기 포함.
         if range_check(next_x,next_y) and (board_man[next_x][next_y]==-1 or board_man[next_x][next_y]==idx ) :
             # 방향도 다시 담아줌
-            man_data[idx][2]=direction
+            man_data[idx][2]=new_direction
             ##
-            next_x = x+dxs[direction]
-            next_y = y+dys[direction]
+            next_x = x+dxs[new_direction]
+            next_y = y+dys[new_direction]
             break
     return next_x,next_y 
 
@@ -181,7 +183,7 @@ for t in range(k):
             
         else:
             # 사람 있을때.
-            # print("found : ",next_x,next_y)
+            #print("found : ",next_x,next_y)
             fight_person=board_man[next_x][next_y]
             winner_idx,looser_idx = fight(chr_idx,fight_person)
             # drop gun
@@ -192,27 +194,38 @@ for t in range(k):
             # winner 가 누구냐에 따라 move 달리.
             if chr_idx==winner_idx:
                 # 후발이 이길시
-                # 먼저 looser가 다음 곳으로 가고.
+                move_chr(next_x,next_y,now_x,now_y,winner_idx)
                 looser_next_x,looser_next_y=move_next_val_looser(next_x,next_y,looser_idx)
                 move_chr(looser_next_x,looser_next_y,next_x,next_y,looser_idx)
                 #이동해서 패자도 먹기.
                 chagne_gun(looser_next_x,looser_next_y,looser_idx)
-
-                move_chr(next_x,next_y,now_x,now_y,winner_idx)
-                pass
+                # 어쩔수 없이 보드에 다시 기록
+                board_man[next_x][next_y]=winner_idx
+                #
             else:
                 #후발이 질시. 후발만 움직인다.
                 looser_next_x,looser_next_y=move_next_val_looser(next_x,next_y,looser_idx)
                 move_chr(looser_next_x,looser_next_y,now_x,now_y,looser_idx)
                 chagne_gun(looser_next_x,looser_next_y,looser_idx)
     # for chr_idx in range(m):    
-    #     print('fin : ',man_data[chr_idx])    
+    #     print('fin : ',man_data[chr_idx])
+    
+    # for i in range(n):
+    #     for j in range(n):
+    #         print(board_man[i][j],end=' ')
+    #     print()
+
+    # for i in range(n):
+    #     for j in range(n):
+    #         print(board_gun[i][j],end=' ')
+    #     print()
+        
+
+    # for i in range(m):
+    #     print(answer[i],end=' ')
 
 for i in range(m):
     print(answer[i],end=' ')
-    
-    # move_chr(next_x,next_y,idx)
-
 
 
 
