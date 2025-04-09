@@ -83,7 +83,7 @@ def search_base(x_cx,y_cx):
 
 def set_base(t):
     time_ind = t -1
-    if t<=m:
+    if time_ind<m:
         cx = cx_list[time_ind]
         # 가장 가까운 베이스 찾기.
         x_cx, y_cx = cx[0],cx[1]
@@ -153,17 +153,19 @@ def bfs(x,y):
         for i in range(4):
             next_x = now_x+dxs[i]
             next_y = now_y+dys[i]
-            if range_check(next_x,next_y) and visit[next_x][next_y]==0:
+            if range_check(next_x,next_y) and visit[next_x][next_y]==0 and grid[next_x][next_y]!=-1:
                 step[next_x][next_y] = step[now_x][now_y] + 1
                 visit[next_x][next_y] = 1
                 que.append(( next_x,next_y ))
 
 
+#print(base_list)
 t=0
 while True:
+     
     t+=1    
     move_all()
-    cnt = 0
+
     # 2단계 + 모두 도착했는지 체크.    
     #print('man ',man_list)
     #print('cx ',cx_list)
@@ -171,14 +173,16 @@ while True:
         if man_list[i]==cx_list[i]:
             #print(i,' 도착')
             grid[man_list[i][0]][man_list[i][1]]= -1
-            cnt+=1
-    
-    if cnt == m:
-        break    
-    
-    set_base(t)
 
-    #print(man_list)
+    set_base(t)
+    #print(man_list)    
+    cnt = 0    
+    for i in range(m):
+        if man_list[i]==cx_list[i]:
+            cnt+=1
+    if cnt == m:
+        break
+
 
 print(t)
 
