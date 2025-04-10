@@ -29,13 +29,18 @@
 # O(k*n^2*m*n) ->k*n^4 -> 10^6
 
 #풀이방법
-# 모두 이동 -> BFS 배열와 맨허튼 거리 비교를 통해 결정
+# 모두 이동 -> BFS 배열와 맨허튼 거리 비교를 통해 결정 (틀렸다.)
+# 모두 이동 -> 맨허튼 거리에서 4방향을 비교하고 그냥 그 방향으로 이동. 최적이동일 필요 없음.
 # 부분 회전 -> 완탐을 통해 정사각형을 하나씩 만든다. N^4
 
 # 격자에는 참가자를 안두고, 벽만.
 # 출구도 따로 기록
 
-from collections import deque
+## 틀린 부분.
+# 문제 조건에서 bfs를 쓰라 하지않고, 맨허튼에서 최적인곳만 움직이라함.
+# 즉 앞으로 벽에 막혀있어도 움직여야하는 것. (봇처럼)
+
+
 
 N,M,K = tuple(map(int,input().split()))
 
@@ -52,9 +57,6 @@ out_pos[0] -= 1
 out_pos[1] -= 1
 
 
-visit = [ [0]*N for i in range(N) ]
-step = [ [0]*N for i in range(N) ]
-
 dxs = [-1,1,0,0]
 dys = [0,0,-1,1]
 
@@ -62,7 +64,7 @@ def range_check(x,y):
     return 0<=x<N and 0<=y<N
 
 def move_all():
-    bfs(out_pos[0],out_pos[1]) # 경로 기록
+    #bfs(out_pos[0],out_pos[1]) # 경로 기록
     mv_player_all = 0
     for chr_idx in range(M):
         mv_player_all += move(chr_idx)
@@ -91,7 +93,7 @@ def move(idx):
         next_x = nx+dxs[i]
         next_y = ny+dys[i]
         next_dist = get_distance(next_x,next_y,out_pos[0],out_pos[1])
-        if range_check(next_x,next_y) and visit[next_x][next_y] and next_dist<dist:
+        if range_check(next_x,next_y) and grid[next_x][next_y]==0 and next_dist<dist:
             dist = next_dist
             confirmed_x = next_x
             confirmed_y = next_y
@@ -106,32 +108,6 @@ def move(idx):
 
 
     return move_size
-
-
-
-def bfs(t_x,t_y):
-    
-    for i in range(N):
-        for j in range(N):
-            visit[i][j] = 0
-            step[i][j] = 0
-    
-    que = deque()
-    que.append((t_x,t_y))
-    visit[t_x][t_y] = True
-    
-    while que:
-        nx,ny=que.popleft()
-        for i in range(4):
-            next_x = nx+dxs[i]
-            next_y = ny+dys[i]
-            if range_check(next_x,next_y) and not visit[next_x][next_y] and grid[next_x][next_y]==0:
-                visit[next_x][next_y]= True
-                step[next_x][next_y]= step[nx][ny] +1
-                que.append((next_x,next_y))
-
-    return
-
 
 
 def rotate():
@@ -227,7 +203,8 @@ for i in range(K):
     #print("Move",man_list)
     rotate()
     #print(man_list)
-    #print('out pos ',out_pos)
+    # print('out pos ',out_pos)
+    # print("-----")
     # for i in range(N):
     #     for j in range(N):
     #         print(grid[i][j],end=' ')
