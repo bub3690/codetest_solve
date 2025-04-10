@@ -233,7 +233,8 @@ for i in range(K):
     #         print(grid[i][j],end=' ')
     #     print()
 
-print(answer_cnt, out_pos[0]+1,out_pos[1]+1)
+print(answer_cnt)
+print( out_pos[0]+1,out_pos[1]+1)
 
 
 
